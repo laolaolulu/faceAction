@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DlibDotNet" Version="19.21.0.20220724" />
+    <PackageReference Include="OpenCvSharp4.Windows" Version="4.6.0.20220608" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resource\shape_predictor_68_face_landmarks.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="shape_predictor_68_face_landmarks.dat.bz2">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
