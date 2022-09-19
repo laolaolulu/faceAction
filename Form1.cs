@@ -1,5 +1,6 @@
 ﻿using DlibDotNet;
 using OpenCvSharp;
+using OpenCvSharp.Flann;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,6 +11,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -24,6 +26,34 @@ namespace WinFormsBlink
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
+
+
+        }
+
+        static double eyeAspectRatio(Vector2[] eye)
+        {
+            // compute the euclidean distances between the two sets of
+            // vertical eye landmarks (x, y)-coordinates
+            var A = Vector2.Distance(eye[1], eye[5]);
+            var B = Vector2.Distance(eye[2], eye[4]);
+            // compute the euclidean distance between the horizontal
+            // eye landmark (x, y)-coordinates
+            var C = Vector2.Distance(eye[0], eye[3]);
+            // compute the eye aspect ratio
+            var ear = (A + B) / (2.0 * C);
+            // return the eye aspect ratio
+            return ear;
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
+        bool isread = false;
+        private void button1_Click(object sender, EventArgs e)
+        {
+            isread = true;
             // define two constants, one for the eye aspect ratio to indicate
             // blink and then a second constant for the number of consecutive
             // frames the eye must be below the threshold
@@ -37,7 +67,7 @@ namespace WinFormsBlink
             using (var detector = Dlib.GetFrontalFaceDetector())
             // 加载人脸68特征点检测模型
             using (var sp = ShapePredictor.Deserialize("Resource/shape_predictor_68_face_landmarks.dat"))
-                while (cap.IsOpened())
+                while (isread)
                 {
                     using var frameMat = cap.RetrieveMat();
                     var saveimg = frameMat.Clone();
@@ -106,27 +136,19 @@ namespace WinFormsBlink
                     {
                         saveimg.ImWrite(string.Format("Resource/{0}.jpg", DateTime.Now.ToString("yyyyMMddHHmmss")));
                         TOTAL = 0;
+                        img.Image = new Bitmap(saveimg.Cols, saveimg.Rows, (int)saveimg.Step(), System.Drawing.Imaging.PixelFormat.Format24bppRgb, saveimg.Data);
+                        isread = false;
+                        Cv2.DestroyAllWindows();
                     }
 
                     Cv2.WaitKey(50);
                 }
-
-           
         }
 
-        static double eyeAspectRatio(Vector2[] eye)
+        private void button2_Click(object sender, EventArgs e)
         {
-            // compute the euclidean distances between the two sets of
-            // vertical eye landmarks (x, y)-coordinates
-            var A = Vector2.Distance(eye[1], eye[5]);
-            var B = Vector2.Distance(eye[2], eye[4]);
-            // compute the euclidean distance between the horizontal
-            // eye landmark (x, y)-coordinates
-            var C = Vector2.Distance(eye[0], eye[3]);
-            // compute the eye aspect ratio
-            var ear = (A + B) / (2.0 * C);
-            // return the eye aspect ratio
-            return ear;
+            isread = false;
+            Cv2.DestroyAllWindows();
         }
     }
 }
