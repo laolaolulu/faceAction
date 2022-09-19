@@ -28,7 +28,6 @@ using (var sp = ShapePredictor.Deserialize("Resource/shape_predictor_68_face_lan
         using var cimg = Dlib.LoadImageData<RgbPixel>(array, (uint)frameMat.Height, (uint)frameMat.Width, (uint)(frameMat.Width * frameMat.ElemSize()));
         var dets = detector.Operator(cimg);
 
-        var shapes = new List<FullObjectDetection>();
         foreach (var rect in dets)
         {
             // 画出检测到的脸的矩形框
@@ -83,6 +82,12 @@ using (var sp = ShapePredictor.Deserialize("Resource/shape_predictor_68_face_lan
         frameMat.PutText(string.Format("Blinks: {0}", TOTAL), new Point(10, 30), HersheyFonts.HersheySimplex, 0.7, new Scalar(0, 0, 255), 2);
 
         Cv2.ImShow("img", frameMat);
+        // Blink 3 times to save
+        if (TOTAL == 3)
+        {
+            frameMat.ImWrite(string.Format("Resource/{0}.jpg", DateTime.Now.ToString("yyyyMMddHHmmss")));
+            TOTAL = 0;
+        }
 
         Cv2.WaitKey(50);
     }
