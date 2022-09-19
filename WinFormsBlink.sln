@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blink", "blink.csproj", "{2D57E00A-0052-4A83-BE0C-92118E0A393D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsBlink", "WinFormsBlink.csproj", "{9A7664CE-8491-4D8B-9888-D7F6BF721B1B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2D57E00A-0052-4A83-BE0C-92118E0A393D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D57E00A-0052-4A83-BE0C-92118E0A393D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D57E00A-0052-4A83-BE0C-92118E0A393D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D57E00A-0052-4A83-BE0C-92118E0A393D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A7664CE-8491-4D8B-9888-D7F6BF721B1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A7664CE-8491-4D8B-9888-D7F6BF721B1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A7664CE-8491-4D8B-9888-D7F6BF721B1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A7664CE-8491-4D8B-9888-D7F6BF721B1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {5E7E598B-396F-4A6C-8C6B-6CB5FD4FBDAC}
+		SolutionGuid = {47C4F651-F297-4E13-8711-DADCDD16055E}
 	EndGlobalSection
 EndGlobal
