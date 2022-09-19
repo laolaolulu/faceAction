@@ -40,6 +40,7 @@ namespace WinFormsBlink
                 while (cap.IsOpened())
                 {
                     using var frameMat = cap.RetrieveMat();
+                    var saveimg = frameMat.Clone();
                     byte[] array = new byte[frameMat.Width * frameMat.Height * frameMat.ElemSize()];
                     Marshal.Copy(frameMat.Data, array, 0, array.Length);
 
@@ -103,7 +104,7 @@ namespace WinFormsBlink
                     // Blink 3 times to save
                     if (TOTAL == 3)
                     {
-                        frameMat.ImWrite(string.Format("Resource/{0}.jpg", DateTime.Now.ToString("yyyyMMddHHmmss")));
+                        saveimg.ImWrite(string.Format("Resource/{0}.jpg", DateTime.Now.ToString("yyyyMMddHHmmss")));
                         TOTAL = 0;
                     }
 
