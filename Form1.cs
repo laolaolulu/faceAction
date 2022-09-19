@@ -63,7 +63,7 @@ namespace WinFormsBlink
             var COUNTER = 0;
             var TOTAL = 0;
 
-            VideoCapture cap = new VideoCapture(0);
+            using VideoCapture cap = new VideoCapture(0);
             using (var detector = Dlib.GetFrontalFaceDetector())
             // 加载人脸68特征点检测模型
             using (var sp = ShapePredictor.Deserialize("Resource/shape_predictor_68_face_landmarks.dat"))
