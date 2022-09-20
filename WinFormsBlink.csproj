@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="WebApiFaceCompare\**" />
+    <EmbeddedResource Remove="WebApiFaceCompare\**" />
+    <None Remove="WebApiFaceCompare\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DlibDotNet" Version="19.21.0.20220724" />
     <PackageReference Include="OpenCvSharp4.Windows" Version="4.6.0.20220608" />
   </ItemGroup>
