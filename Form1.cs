@@ -60,14 +60,16 @@ namespace WinFormsBlink
             var COUNTER = 0;
             var TOTAL = 0;
 
-            using VideoCapture cap = new VideoCapture(0);
-
-            while (isread)
-            {
-                using var frameMat = cap.RetrieveMat();
-                var saveimg = frameMat.Clone();
-                byte[] array = new byte[frameMat.Width * frameMat.Height * frameMat.ElemSize()];
-                Marshal.Copy(frameMat.Data, array, 0, array.Length);
+            VideoCapture cap = new VideoCapture(0);
+            using (var detector = Dlib.GetFrontalFaceDetector())
+            // 加载人脸68特征点检测模型
+            using (var sp = ShapePredictor.Deserialize("Resource/shape_predictor_68_face_landmarks.dat"))
+                while (isread)
+                {
+                    using var frameMat = cap.RetrieveMat();
+                    var saveimg = frameMat.Clone();
+                    byte[] array = new byte[frameMat.Width * frameMat.Height * frameMat.ElemSize()];
+                    Marshal.Copy(frameMat.Data, array, 0, array.Length);
 
                 using var cimg = Dlib.LoadImageData<RgbPixel>(array, (uint)frameMat.Height, (uint)frameMat.Width, (uint)(frameMat.Width * frameMat.ElemSize()));
                 var dets = detector.Operator(cimg);
