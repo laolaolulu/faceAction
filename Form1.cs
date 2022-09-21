@@ -17,12 +17,15 @@ namespace WinFormsBlink
             InitializeComponent();
         }
         ShapePredictor sp;
+        ShapePredictor sp1;
         LossMetric net;
         FrontalFaceDetector detector;
         private void Form1_Load(object sender, EventArgs e)
         {
             // 加载人脸68特征点检测模型
             sp = ShapePredictor.Deserialize("Resource/shape_predictor_68_face_landmarks.dat");
+
+            sp1 = ShapePredictor.Deserialize("Resource/shape_predictor_5_face_landmarks.dat");
 
             net = LossMetric.Deserialize("Resource/dlib_face_recognition_resnet_model_v1.dat");
 
@@ -48,8 +51,7 @@ namespace WinFormsBlink
         bool isread = false;
         private void button1_Click(object sender, EventArgs e)
         {
-            FullObjectDetection shape = null;
-            //  faceDescriptors = null;
+             FullObjectDetection shape = null;
             isread = true;
             // define two constants, one for the eye aspect ratio to indicate
             // blink and then a second constant for the number of consecutive
@@ -60,32 +62,29 @@ namespace WinFormsBlink
             var COUNTER = 0;
             var TOTAL = 0;
 
-            VideoCapture cap = new VideoCapture(0);
-            using (var detector = Dlib.GetFrontalFaceDetector())
-            // 加载人脸68特征点检测模型
-            using (var sp = ShapePredictor.Deserialize("Resource/shape_predictor_68_face_landmarks.dat"))
-                while (isread)
-                {
-                    using var frameMat = cap.RetrieveMat();
-                    var saveimg = frameMat.Clone();
-                    byte[] array = new byte[frameMat.Width * frameMat.Height * frameMat.ElemSize()];
-                    Marshal.Copy(frameMat.Data, array, 0, array.Length);
+            using VideoCapture cap = new VideoCapture(0);
+            while (isread)
+            {
+                using var frameMat = cap.RetrieveMat();
+                using var saveimg = frameMat.Clone();
+                byte[] array = new byte[frameMat.Width * frameMat.Height * frameMat.ElemSize()];
+                Marshal.Copy(frameMat.Data, array, 0, array.Length);
 
                 using var cimg = Dlib.LoadImageData<RgbPixel>(array, (uint)frameMat.Height, (uint)frameMat.Width, (uint)(frameMat.Width * frameMat.ElemSize()));
                 var dets = detector.Operator(cimg);
 
                 foreach (var face in dets)
                 {
-                    shape = sp.Detect(cimg, face);
-
+                    using var shape1 = sp.Detect(cimg, face);
+                    shape = sp1.Detect(cimg, face);
                     // 画出检测到的脸的矩形框
                     frameMat.Rectangle(new Rect(face.Left, face.Top, (int)face.Width, (int)face.Height), new Scalar(255, 0, 0));
 
                     var eye1 = new Vector2[6];
                     var eye2 = new Vector2[6];
-                    for (uint i = 0; i < shape.Parts; i++)
+                    for (uint i = 0; i < shape1.Parts; i++)
                     {
-                        var point = shape.GetPart(i);
+                        var point = shape1.GetPart(i);
                         // 获取第一只眼睛
                         if (i >= 36 && i < 42)
                         {
@@ -142,8 +141,8 @@ namespace WinFormsBlink
 
                     if (shape != null)
                     {
-                        var faceChipDetail = Dlib.GetFaceChipDetails(shape, 150, 0.25);
-                        var faceChip = Dlib.ExtractImageChip<RgbPixel>(cimg, faceChipDetail);
+                        using var faceChipDetail = Dlib.GetFaceChipDetails(shape, 150, 0.25);
+                        using var faceChip = Dlib.ExtractImageChip<RgbPixel>(cimg, faceChipDetail);
                         faces[0] = new Matrix<RgbPixel>(faceChip);
                     }
                 }
@@ -160,18 +159,18 @@ namespace WinFormsBlink
         Matrix<RgbPixel>[] faces = new Matrix<RgbPixel>[2];
         private void button3_Click(object sender, EventArgs e)
         {
-            OpenFileDialog fileDialog = new OpenFileDialog();
+            using OpenFileDialog fileDialog = new OpenFileDialog();
             DialogResult result = fileDialog.ShowDialog();
             if (result == DialogResult.OK)
             {
                 pictureBox1.Image = Image.FromFile(fileDialog.FileName);
-                var img = Dlib.LoadImageAsMatrix<RgbPixel>(fileDialog.FileName);
+                using var img = Dlib.LoadImageAsMatrix<RgbPixel>(fileDialog.FileName);
                 var dets = detector.Operator(img);
 
                 foreach (var face in dets)
                 {
-                    var shape = sp.Detect(img, face);
-                    var faceChipDetail = Dlib.GetFaceChipDetails(shape, 150, 0.25);
+                    using var shape = sp1.Detect(img, face);
+                    using var faceChipDetail = Dlib.GetFaceChipDetails(shape, 150, 0.25);
                     faces[1] = Dlib.ExtractImageChip<RgbPixel>(img, faceChipDetail);
                 }
             }
@@ -181,8 +180,8 @@ namespace WinFormsBlink
         {
             if (faces[0] != null && faces[1] != null)
             {
-                var faceDescriptors = net.Operator(faces);
-                var diff = faceDescriptors[0] - faceDescriptors[1];
+                using var faceDescriptors = net.Operator(faces);
+                using var diff = faceDescriptors[0] - faceDescriptors[1];
                 var desnum = Dlib.Length(diff);
                 //if (Dlib.Length(diff) < 0.6)
                 MessageBox.Show(String.Format("{0}({1:N2})", (desnum < 0.5).ToString(), desnum));
