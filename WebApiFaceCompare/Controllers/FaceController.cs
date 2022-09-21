@@ -1,6 +1,18 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OpenCvSharp;
+using System.Net;
+using System.Drawing;
+using OpenCvSharp.Extensions;
+using System.Threading.Tasks;
+using DlibDotNet.Dnn;
+using DlibDotNet;
+using DlibDotNet.Extensions;
+using System;
+using static System.Net.Mime.MediaTypeNames;
+using System.Diagnostics;
+using System.IO;
+using Image = System.Drawing.Image;
 
 namespace WebApiFaceCompare.Controllers
 {
@@ -14,16 +26,48 @@ namespace WebApiFaceCompare.Controllers
         /// <summary>
         /// Face Compare
         /// </summary>
+        /// <param name="image">image file</param>
         /// <param name="imgUrl">web image url</param>
-        /// <param name="imgBase64">base64 image</param>
         /// <returns></returns>
         [HttpPost]
-        public object Compare(string imgUrl="2", string imgBase64="3")
+        public string Compare(IFormFile image, string imgUrl = "https://gitee.com/laolaolulu/public/raw/master/20220920192624.jpg")
         {
-            using var cap = new VideoCapture(imgUrl);
-            using var img1 = cap.RetrieveMat();
-           // using var img2 =Cv2.ImDecode();
-            return 0;
+            using var img1 = ((Bitmap)Image.FromStream(image.OpenReadStream())).ToMatrix<RgbPixel>();
+
+            var req = WebRequest.CreateHttp(imgUrl);
+            using var img2 = ((Bitmap)Image.FromStream(req.GetResponse().GetResponseStream())).ToMatrix<RgbPixel>();
+
+            using var sp = ShapePredictor.Deserialize("Resource/shape_predictor_68_face_landmarks.dat");
+            using var net = LossMetric.Deserialize("Resource/dlib_face_recognition_resnet_model_v1.dat");
+            using var detector = Dlib.GetFrontalFaceDetector();
+
+            Matrix<RgbPixel>[] faces = new Matrix<RgbPixel>[2];
+
+            var dets1 = detector.Operator(img1);
+            foreach (var face in dets1)
+            {
+                var shape = sp.Detect(img1, face);
+                var faceChipDetail = Dlib.GetFaceChipDetails(shape, 150, 0.25);
+                faces[0] = Dlib.ExtractImageChip<RgbPixel>(img1, faceChipDetail);
+            }
+
+            var dets2 = detector.Operator(img2);
+            foreach (var face in dets2)
+            {
+                var shape = sp.Detect(img2, face);
+                var faceChipDetail = Dlib.GetFaceChipDetails(shape, 150, 0.25);
+                faces[1] = Dlib.ExtractImageChip<RgbPixel>(img2, faceChipDetail);
+            }
+
+            if (faces[0] != null && faces[1] != null)
+            {
+                var faceDescriptors = net.Operator(faces);
+                var diff = faceDescriptors[0] - faceDescriptors[1];
+                var desnum = Dlib.Length(diff);
+                return string.Format("{0}({1:N2})", (desnum < 0.6).ToString(), desnum);
+            }
+
+            return "Error";
         }
     }
 }
