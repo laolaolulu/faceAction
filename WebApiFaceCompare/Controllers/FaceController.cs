@@ -70,7 +70,7 @@ namespace WebApiFaceCompare.Controllers
                 var faceDescriptors = net.Operator(faces);
                 var diff = faceDescriptors[0] - faceDescriptors[1];
                 var desnum = Dlib.Length(diff);
-                return string.Format("{0}({1:N2})", (desnum < 0.55).ToString(), desnum);
+                return string.Format("{0}({1:N2})", (desnum < 0.5).ToString(), desnum);
             }
 
             return "Error";
