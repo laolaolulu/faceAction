@@ -32,7 +32,7 @@ namespace WebApiFaceCompare.Controllers
         [HttpPost]
         public string Compare(IFormFile image, string imgUrl = "https://gitee.com/laolaolulu/public/raw/master/20220920192624.jpg")
         {
-            using var sp = ShapePredictor.Deserialize("Resource/shape_predictor_68_face_landmarks.dat");
+            using var sp = ShapePredictor.Deserialize("Resource/shape_predictor_5_face_landmarks.dat");
             using var net = LossMetric.Deserialize("Resource/dlib_face_recognition_resnet_model_v1.dat");
             using var detector = Dlib.GetFrontalFaceDetector();
 
