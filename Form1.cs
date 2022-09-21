@@ -185,7 +185,7 @@ namespace WinFormsBlink
                 var diff = faceDescriptors[0] - faceDescriptors[1];
                 var desnum = Dlib.Length(diff);
                 //if (Dlib.Length(diff) < 0.6)
-                MessageBox.Show(String.Format("{0}({1:N2})", (desnum < 0.6).ToString(), desnum));
+                MessageBox.Show(String.Format("{0}({1:N2})", (desnum < 0.55).ToString(), desnum));
             }
         }
     }
