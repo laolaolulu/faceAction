@@ -32,32 +32,38 @@ namespace WebApiFaceCompare.Controllers
         [HttpPost]
         public string Compare(IFormFile image, string imgUrl = "https://gitee.com/laolaolulu/public/raw/master/20220920192624.jpg")
         {
-            using var img1 = ((Bitmap)Image.FromStream(image.OpenReadStream())).ToMatrix<RgbPixel>();
-
-            var req = WebRequest.CreateHttp(imgUrl);
-            using var img2 = ((Bitmap)Image.FromStream(req.GetResponse().GetResponseStream())).ToMatrix<RgbPixel>();
-
             using var sp = ShapePredictor.Deserialize("Resource/shape_predictor_68_face_landmarks.dat");
             using var net = LossMetric.Deserialize("Resource/dlib_face_recognition_resnet_model_v1.dat");
             using var detector = Dlib.GetFrontalFaceDetector();
 
             Matrix<RgbPixel>[] faces = new Matrix<RgbPixel>[2];
 
-            var dets1 = detector.Operator(img1);
-            foreach (var face in dets1)
+            var t1 = Task.Run(() =>
             {
-                var shape = sp.Detect(img1, face);
-                var faceChipDetail = Dlib.GetFaceChipDetails(shape, 150, 0.25);
-                faces[0] = Dlib.ExtractImageChip<RgbPixel>(img1, faceChipDetail);
-            }
+                using var img1 = ((Bitmap)Image.FromStream(image.OpenReadStream())).ToMatrix<RgbPixel>();
+                var dets1 = detector.Operator(img1);
+                foreach (var face in dets1)
+                {
+                    var shape = sp.Detect(img1, face);
+                    var faceChipDetail = Dlib.GetFaceChipDetails(shape, 150, 0.25);
+                    faces[0] = Dlib.ExtractImageChip<RgbPixel>(img1, faceChipDetail);
+                }
+            });
 
-            var dets2 = detector.Operator(img2);
-            foreach (var face in dets2)
-            {
-                var shape = sp.Detect(img2, face);
-                var faceChipDetail = Dlib.GetFaceChipDetails(shape, 150, 0.25);
-                faces[1] = Dlib.ExtractImageChip<RgbPixel>(img2, faceChipDetail);
-            }
+            var t2 = Task.Run(() => {
+                var req = WebRequest.CreateHttp(imgUrl);
+                using var img2 = ((Bitmap)Image.FromStream(req.GetResponse().GetResponseStream())).ToMatrix<RgbPixel>();
+                var dets2 = detector.Operator(img2);
+                foreach (var face in dets2)
+                {
+                    var shape = sp.Detect(img2, face);
+                    var faceChipDetail = Dlib.GetFaceChipDetails(shape, 150, 0.25);
+                    faces[1] = Dlib.ExtractImageChip<RgbPixel>(img2, faceChipDetail);
+                }
+            });
+
+       
+            Task.WaitAll(t1,t2);       
 
             if (faces[0] != null && faces[1] != null)
             {
