@@ -8,8 +8,11 @@
 
   <ItemGroup>
     <Compile Remove="WebApiFaceCompare\**" />
+    <Compile Remove="WinFormsScan\**" />
     <EmbeddedResource Remove="WebApiFaceCompare\**" />
+    <EmbeddedResource Remove="WinFormsScan\**" />
     <None Remove="WebApiFaceCompare\**" />
+    <None Remove="WinFormsScan\**" />
   </ItemGroup>
 
   <ItemGroup>

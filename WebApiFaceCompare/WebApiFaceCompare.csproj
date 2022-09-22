@@ -14,10 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WinFormsBlink.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Resource\dlib_face_recognition_resnet_model_v1.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
