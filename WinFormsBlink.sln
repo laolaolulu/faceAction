@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsBlink", "WinFormsBl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiFaceCompare", "WebApiFaceCompare\WebApiFaceCompare.csproj", "{53309559-59B6-41F6-916B-2AD5DB813298}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsScan", "WinFormsScan\WinFormsScan.csproj", "{B9883B1F-D61E-411E-BEF5-8F45514D88D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{53309559-59B6-41F6-916B-2AD5DB813298}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53309559-59B6-41F6-916B-2AD5DB813298}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53309559-59B6-41F6-916B-2AD5DB813298}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9883B1F-D61E-411E-BEF5-8F45514D88D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9883B1F-D61E-411E-BEF5-8F45514D88D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9883B1F-D61E-411E-BEF5-8F45514D88D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9883B1F-D61E-411E-BEF5-8F45514D88D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
