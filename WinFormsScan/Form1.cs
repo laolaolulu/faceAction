@@ -20,12 +20,15 @@ namespace WinFormsScan
 
                 var openCVReader = new ZXing.OpenCV.BarcodeReader();
                 var openCVResult = openCVReader.DecodeMultiple(frameMat);
-                if (openCVResult!=null)
+                if (openCVResult != null)
                 {
                     foreach (var item in openCVResult)
                     {
-                        //frameMat.Rectangle(new Rect(face.Left, face.Top, (int)face.Width, (int)face.Height), new Scalar(255, 0, 0));
-                     
+                        //var ps = item.ResultPoints;
+                        //for (int i = 0; i < ps.Length; i++)
+                        //{
+                        //    frameMat.Line((int)ps[i].X, (int)ps[i].Y, (int)ps[(i + 1) % 4].X, (int)ps[(i + 1) % 4].Y, new Scalar(255, 255, 0), 1, LineTypes.Link8);
+                        //};
                         textBox1.AppendText(string.Format("{0}  {1}\r\n", item.BarcodeFormat.ToString(), item.Text));
                     }
                     Cv2.WaitKey(5000);
