@@ -1,18 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using OpenCvSharp;
 using System.Net;
-using System.Drawing;
-using OpenCvSharp.Extensions;
 using System.Threading.Tasks;
 using DlibDotNet.Dnn;
 using DlibDotNet;
 using DlibDotNet.Extensions;
-using System;
-using static System.Net.Mime.MediaTypeNames;
-using System.Diagnostics;
-using System.IO;
-using Image = System.Drawing.Image;
+using System.Drawing;
+using System.Linq;
 
 namespace WebApiFaceCompare.Controllers
 {
@@ -50,7 +44,8 @@ namespace WebApiFaceCompare.Controllers
                 }
             });
 
-            var t2 = Task.Run(() => {
+            var t2 = Task.Run(() =>
+            {
                 var req = WebRequest.CreateHttp(imgUrl);
                 using var img2 = ((Bitmap)Image.FromStream(req.GetResponse().GetResponseStream())).ToMatrix<RgbPixel>();
                 var dets2 = detector.Operator(img2);
@@ -62,8 +57,8 @@ namespace WebApiFaceCompare.Controllers
                 }
             });
 
-       
-            Task.WaitAll(t1,t2);       
+
+            Task.WaitAll(t1, t2);
 
             if (faces[0] != null && faces[1] != null)
             {
@@ -75,5 +70,31 @@ namespace WebApiFaceCompare.Controllers
 
             return "Error";
         }
+
+        /// <summary>
+        /// Scan barcode QR code
+        /// </summary>
+        /// <param name="image">image file</param>
+        /// <returns></returns>
+        [HttpPost]
+        public object Scan(IFormFile image)
+        {
+            using var img = (System.DrawingCore.Bitmap)System.DrawingCore.Image.FromStream(image.OpenReadStream());
+            //// create a barcode reader instance
+            var reader = new ZXing.ZKWeb.BarcodeReader();
+            var result = reader.DecodeMultiple(img);
+            // do something with the result
+            if (result != null)
+            {
+                return result.Select(s => new
+                {
+                    type = s.BarcodeFormat.ToString(),
+                    text = s.Text
+                });
+            }
+            return "Error";
+        }
+
+
     }
 }
