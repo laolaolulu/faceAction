@@ -58,7 +58,7 @@ namespace WinFormsScan
             using var hog = new HOGDescriptor();
             hog.SetSVMDetector(HOGDescriptor.GetDefaultPeopleDetector());
             int facesn = 0;
-           int peoplesn = 0;
+            int peoplesn = 0;
             while (isread)
             {
                 var frameMat = cap.RetrieveMat();
@@ -80,6 +80,24 @@ namespace WinFormsScan
                     var offset = new OpenCvSharp.Point(deltaSize.Width / 2, deltaSize.Height / 2);
                     faces[i] += deltaSize;
                     faces[i] -= offset;
+                    if (faces[i].X < 0)
+                    {
+                        faces[i].Width = faces[i].Width + faces[i].X;
+                        faces[i].X = 0;
+                    }
+                    if (faces[i].Y < 0)
+                    {
+                        faces[i].Height = faces[i].Height + faces[i].Y;
+                        faces[i].Y = 0;
+                    }
+                    if (faces[i].Width + faces[i].X > image.Width)
+                    {
+                        faces[i].Width = image.Width - faces[i].X;
+                    }
+                    if (faces[i].Height + faces[i].Y > image.Height)
+                    {
+                        faces[i].Height = image.Height - faces[i].Y;
+                    }
                     frameMat.Rectangle(faces[i], new Scalar(0, 0, 255));
                 }
 
