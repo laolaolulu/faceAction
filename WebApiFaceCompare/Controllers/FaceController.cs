@@ -7,6 +7,8 @@ using DlibDotNet;
 using DlibDotNet.Extensions;
 using System.Drawing;
 using System.Linq;
+using OpenCvSharp;
+using OpenCvSharp.Extensions;
 
 namespace WebApiFaceCompare.Controllers
 {
@@ -95,6 +97,46 @@ namespace WebApiFaceCompare.Controllers
             return "Error";
         }
 
+        /// <summary>
+        /// create work card
+        /// </summary>
+        /// <param name="image">photo</param>
+        /// <param name="name">name</param>
+        /// <param name="code">No</param>
+        /// <returns></returns>
+        [HttpPost]
+        public string CreateCard(IFormFile image, string name = "Sachin", string code = "123456")
+        {
+            try
+            {
+                var photo = Mat.FromStream(image.OpenReadStream(), ImreadModes.Color).Resize(new OpenCvSharp.Size(470, 560));
 
+                var bgimg = Cv2.ImRead("Resource/MedantaIdCardFront.PNG");
+                var roi = new Mat(bgimg, new Rect(new OpenCvSharp.Point(380, 510), photo.Size()));
+                photo.CopyTo(roi);
+
+
+                var codewrit = new ZXing.BarcodeWriter();
+                codewrit.Format = ZXing.BarcodeFormat.QR_CODE;
+                codewrit.Options.Margin = 1;
+                codewrit.Options.Height = 300;
+                codewrit.Options.Width = 300;
+
+                var qr = codewrit.Write(new { name, code }.ToString()).ToMat();
+                var qrroi = new Mat(bgimg, new Rect(new OpenCvSharp.Point(880, 1510), qr.Size()));
+                qr.CopyTo(qrroi);
+                var tsize = Cv2.GetTextSize(name, HersheyFonts.HersheySimplex, 2.7, 1, out int basel);
+                bgimg.PutText(name, new OpenCvSharp.Point(bgimg.Width / 2 - tsize.Width / 2, 1230), HersheyFonts.HersheySimplex, 2.7, new Scalar(0, 0, 0), 8);
+                bgimg.PutText(code, new OpenCvSharp.Point(450, 1640), HersheyFonts.HersheySimplex, 2, new Scalar(0, 0, 0), 4);
+                var imgurl = string.Format("wwwroot/WorkCard/{0}.jpg", code);
+                Cv2.ImWrite(imgurl, bgimg);
+
+                return string.Format("{0}{1}", Request.Host.Value, imgurl.TrimStart("wwwroot".ToArray()));
+            }
+            catch (System.Exception e)
+            {
+                return "Error:" + e.Message;
+            }
+        }
     }
 }

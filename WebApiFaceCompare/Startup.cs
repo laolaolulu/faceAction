@@ -50,6 +50,8 @@ namespace WebApiFaceCompare
             {
                 endpoints.MapControllers();
             });
+
+            app.UseStaticFiles();
         }
     }
 }
