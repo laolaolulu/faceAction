@@ -109,27 +109,61 @@ namespace WebApiFaceCompare.Controllers
         {
             try
             {
-                var photo = Mat.FromStream(image.OpenReadStream(), ImreadModes.Color).Resize(new OpenCvSharp.Size(470, 560));
+                using var photo = Mat.FromStream(image.OpenReadStream(), ImreadModes.Color).Resize(new OpenCvSharp.Size(470, 560));
 
-                var bgimg = Cv2.ImRead("Resource/MedantaIdCardFront.PNG");
-                var roi = new Mat(bgimg, new Rect(new OpenCvSharp.Point(380, 510), photo.Size()));
+                 var bgimg = Cv2.ImRead("Resource/MedantaIdCardFront.PNG");
+                using var roi = new Mat(bgimg, new Rect(new OpenCvSharp.Point(bgimg.Width / 2 - photo.Width / 2, 510), photo.Size()));
                 photo.CopyTo(roi);
 
 
-                var codewrit = new ZXing.BarcodeWriter();
-                codewrit.Format = ZXing.BarcodeFormat.QR_CODE;
-                codewrit.Options.Margin = 1;
-                codewrit.Options.Height = 300;
-                codewrit.Options.Width = 300;
+                var codewrit = new ZXing.BarcodeWriter
+                {
+                    Format = ZXing.BarcodeFormat.QR_CODE,
+                    Options = new ZXing.Common.EncodingOptions()
+                    {
+                        Margin = 1,
+                        Height = 300,
+                        Width = 300
+                    }
+                };
 
-                var qr = codewrit.Write(new { name, code }.ToString()).ToMat();
-                var qrroi = new Mat(bgimg, new Rect(new OpenCvSharp.Point(880, 1510), qr.Size()));
+                using var qr = codewrit.Write(new { name, code }.ToString()).ToMat();
+                using var qrroi = new Mat(bgimg, new Rect(new OpenCvSharp.Point(880, 1510), qr.Size()));
                 qr.CopyTo(qrroi);
+
+
+
+                var barwrit = new ZXing.BarcodeWriter
+                {
+                    Format = ZXing.BarcodeFormat.CODE_128,
+                    Options = new ZXing.Common.EncodingOptions()
+                    {
+                        Margin = 1,
+                        Height = 100,
+                        Width = 300
+                    }
+                };
+
+                using var bar = barwrit.Write(code).ToMat();
+                using var barroi = new Mat(bgimg, new Rect(new OpenCvSharp.Point(450, 1700), bar.Size()));
+                bar.CopyTo(barroi);
+
+
                 var tsize = Cv2.GetTextSize(name, HersheyFonts.HersheySimplex, 2.7, 1, out int basel);
                 bgimg.PutText(name, new OpenCvSharp.Point(bgimg.Width / 2 - tsize.Width / 2, 1230), HersheyFonts.HersheySimplex, 2.7, new Scalar(0, 0, 0), 8);
                 bgimg.PutText(code, new OpenCvSharp.Point(450, 1640), HersheyFonts.HersheySimplex, 2, new Scalar(0, 0, 0), 4);
+
                 var imgurl = string.Format("wwwroot/WorkCard/{0}.jpg", code);
                 Cv2.ImWrite(imgurl, bgimg);
+
+                //Task.Run(() =>
+                //{
+                //    while (true)
+                //    {
+                //        Cv2.ImShow("img32", bgimg.Resize(new OpenCvSharp.Size(bgimg.Width/4, bgimg.Height/4)));
+                //        Cv2.WaitKey(100);
+                //    }
+                //});
 
                 return string.Format("{0}{1}", Request.Host.Value, imgurl.TrimStart("wwwroot".ToArray()));
             }
