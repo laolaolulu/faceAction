@@ -96,7 +96,7 @@ namespace WinFormsScan
                                    {
                                        Directory.CreateDirectory(string.Format("Resource/Faces/{0}", strfilename));
                                    }
-                                   var face = new Mat(image, new Rect(faces[i].X, faces[i].Y, faces[i].Width, faces[i].Y));
+                                   var face = new Mat(image, new Rect(faces[i].X, faces[i].Y, faces[i].Width, faces[i].Height));
                                    Cv2.ImWrite(string.Format("Resource/Faces/{0}/face{1}.jpg", strfilename, i), face);
                                }
                                MessageBox.Show(string.Format("Save Success Path({0})", string.Format("Resource/Faces/{0}", strfilename)));
