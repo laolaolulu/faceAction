@@ -58,7 +58,7 @@ namespace WinFormsScan
             using var hog = new HOGDescriptor();
             hog.SetSVMDetector(HOGDescriptor.GetDefaultPeopleDetector());
             int facesn = 0;
-           int peoplesn = 0;
+            int peoplesn = 0;
             while (isread)
             {
                 var frameMat = cap.RetrieveMat();
@@ -83,7 +83,7 @@ namespace WinFormsScan
                     frameMat.Rectangle(faces[i], new Scalar(0, 0, 255));
                 }
 
-                if (facesn != faces.Length || peoplesn != peoples.Length)
+                if ((facesn != faces.Length && faces.Length > 0) || (peoplesn != peoples.Length && peoples.Length > 0))
                 {
                     save = true;
                 }
