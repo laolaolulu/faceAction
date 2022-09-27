@@ -53,7 +53,7 @@ namespace WinFormsScan
         {
             isread = true;
 
-            var face_detect = new CascadeClassifier("Resource/lbpcascade_frontalface_improved.xml");
+            using var face_detect = new CascadeClassifier("Resource/lbpcascade_frontalface_improved.xml");
             using VideoCapture cap = new VideoCapture(0);
             using var hog = new HOGDescriptor();
             hog.SetSVMDetector(HOGDescriptor.GetDefaultPeopleDetector());
